@@ -4,9 +4,18 @@ using namespace std;
 
 /*************************************************************************************************************
  *                                              
- * Link : 
+ * Link : https://www.geeksforgeeks.org/in-place-merge-sort/
  * Description:
+    Implement Merge Sort i.e. standard implementation keeping the sorting algorithm as in-place.
+    In-place means it does not occupy extra memory for merge operation as in standard case.
 
+    Examples:
+
+    Input: arr[] = {2, 3, 4, 1}
+    Output: 1 2 3 4
+
+    Input: arr[] = {56, 2, 45}
+    Output: 2 45 56
  * Resources:
  *  
  * 
@@ -44,6 +53,44 @@ typedef vector<pll> vpll;
 typedef vector<vi> vvi;
 typedef vector<vl> vvl;
 
+void merge(int arr[], int l1, int m, int r)
+{
+    int l2 = m + 1;
+    if (arr[m] <= arr[l1])
+        return;
+
+    while (l1 <= m && l2 <= r)
+    {
+        if (arr[l1] < arr[l2])
+            ++l1;
+        else
+        {
+            int val{arr[l2]}, idx{l2};
+            while (l2 != l1)
+            {
+                arr[idx] = arr[idx - 1];
+                idx--;
+            }
+            arr[idx] = val;
+            ++l1;
+            ++l2;
+            ++m;
+        }
+    }
+}
+
+void merge_sort(int arr[], int left, int right)
+{
+    if (left < right)
+    {
+        int mid = left + (right - left) / 2;
+
+        merge_sort(arr, left, mid);
+        merge_sort(arr, mid + 1, right);
+        merge(arr, left, mid, right);
+    }
+}
+
 int main()
 {
     ios_base::sync_with_stdio(0), cin.tie(0), cout.tie(0);
@@ -56,6 +103,14 @@ int main()
     {
         int n{0};
         si(n);
+
+        int arr[n] = {0};
+        fo(i, 0, n) si(arr[i]);
+
+        merge_sort(arr, 0, n - 1);
+
+        fo(i, 0, n) cout << arr[i] << " ";
+        cout << "\n";
     }
 
     return 0;
