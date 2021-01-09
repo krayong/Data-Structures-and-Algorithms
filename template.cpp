@@ -49,12 +49,12 @@ int main()
     ios_base::sync_with_stdio(0), cin.tie(0), cout.tie(0);
     srand(chrono::high_resolution_clock::now().time_since_epoch().count());
 
-    int t{0};
+    int t;
     si(t);
 
     while (t--)
     {
-        int n{0};
+        int n;
         si(n);
     }
 
