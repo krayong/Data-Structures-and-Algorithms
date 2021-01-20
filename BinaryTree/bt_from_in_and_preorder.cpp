@@ -3,11 +3,38 @@ using namespace std;
 
 /*************************************************************************************************************
  *                                              
- * Link : 
+ * Link : https://practice.geeksforgeeks.org/problems/construct-tree-1/1
  * Description:
-    
+    Given 2 Arrays of Inorder and Preorder traversal. Construct a tree and print the Postorder traversal. 
+
+    Examples:
+
+    Input:
+    N = 4
+    inorder[] = {1 6 8 7}
+    preorder[] = {1 6 7 8}
+    Output: 8 7 6 1
+    Example 2:
+
+    Input:
+    N = 6
+    inorder[] = {3 1 4 0 5 2}
+    preorder[] = {0 1 3 4 2 5}
+    Output: 3 4 1 5 2 0
+    Explanation: The tree will look like
+           0
+        /     \
+       1       2
+     /   \    /
+    3    4   5
+
+    Expected Time Complexity: O(N*N).
+    Expected Auxiliary Space: O(N).
+
+    Constraints:
+    1<=Number of Nodes<=1000
  * Resources:
- *  
+ *  https://www.geeksforgeeks.org/construct-tree-from-given-inorder-and-preorder-traversal/
  * 
 *************************************************************************************************************/
 
@@ -95,6 +122,34 @@ struct BinaryTree
         this->root = build_level_order_util(arr, this->root, 0);
     }
 
+    Node *build_tree_util(int inorder[], int preorder[], int l, int h, unordered_map<int, int> &um)
+    {
+        static int pre_index = 0;
+
+        if (l > h)
+            return NULL;
+
+        Node *root = new Node(preorder[pre_index++]);
+
+        if (l == h)
+            return root;
+
+        int idx = um[root->data];
+
+        root->left = build_tree_util(inorder, preorder, l, idx - 1, um);
+        root->right = build_tree_util(inorder, preorder, idx + 1, h, um);
+
+        return root;
+    }
+
+    void build_tree(int inorder[], int preorder[], int n)
+    {
+        unordered_map<int, int> um;
+        fo(i, 0, n) um[inorder[i]] = i;
+
+        this->root = build_tree_util(inorder, preorder, 0, n - 1, um);
+    }
+
 private:
     void print_in_order_util(Node *node)
     {
@@ -153,11 +208,17 @@ int main()
         int n;
         si(n);
 
-        BinaryTree bt;
-        bt.build_level_order(n);
+        int inorder[n] = {0};
+        fo(i, 0, n) si(inorder[i]);
 
-        cout << "Inorder traversal:\n";
-        bt.print_in_order();
+        int preorder[n] = {0};
+        fo(i, 0, n) si(preorder[i]);
+
+        BinaryTree bt;
+        bt.build_tree(inorder, preorder, n);
+
+        cout << "Postorder traversal:\n";
+        bt.print_post_order();
     }
 
     return 0;

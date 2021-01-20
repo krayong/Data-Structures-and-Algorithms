@@ -3,11 +3,43 @@ using namespace std;
 
 /*************************************************************************************************************
  *                                              
- * Link : 
+ * Link : https://practice.geeksforgeeks.org/problems/transform-to-sum-tree/1
  * Description:
+    Given a Binary Tree of size N , where each node can have positive or negative values. 
+    Convert this to a tree where each node contains the sum of the left and right sub trees 
+    of the original tree. The values of leaf nodes are changed to 0.
+
+    Examples:
+
+    Input:
+                 10
+              /      \
+            -2        6
+          /   \     /  \
+        8     -4   7    5
+
+    Output:
+                20
+              /    \
+            4       12
+          /  \     /  \
+        0     0   0    0
+
+    Explanation:
+
+              (4-2+12+6)
+            /           \
+         (8-4)         (7+5)
+         /   \         /  \
+        0     0       0    0
     
+    Expected Time Complexity: O(N)
+    Expected Auxiliary Space: O(height of tree)
+    
+    Constraints:
+    1 ≤ N ≤ 104
  * Resources:
- *  
+ *  https://www.geeksforgeeks.org/convert-a-given-tree-to-sum-tree/
  * 
 *************************************************************************************************************/
 
@@ -95,6 +127,23 @@ struct BinaryTree
         this->root = build_level_order_util(arr, this->root, 0);
     }
 
+    int to_sum_tree(Node *root)
+    {
+        if (root == NULL)
+            return 0;
+        
+        int old_data = root->data;
+
+        root->data = to_sum_tree(root->left) + to_sum_tree(root->right);
+
+        return old_data + root->data;
+    }
+
+    void to_sum_tree()
+    {
+        to_sum_tree(this->root);
+    }
+
 private:
     void print_in_order_util(Node *node)
     {
@@ -157,6 +206,10 @@ int main()
         bt.build_level_order(n);
 
         cout << "Inorder traversal:\n";
+        bt.print_in_order();
+
+        bt.to_sum_tree();
+        cout << "Sum tree inorder traversal:\n";
         bt.print_in_order();
     }
 

@@ -3,9 +3,18 @@ using namespace std;
 
 /*************************************************************************************************************
  *                                              
- * Link : 
+ * Link : https://www.geeksforgeeks.org/diagonal-traversal-of-binary-tree/
  * Description:
-    
+   Consider lines of slope -1 passing between nodes. 
+   Given a Binary Tree, print all diagonal elements in a binary tree belonging to the same line.
+
+   Example:
+   Input: https://media.geeksforgeeks.org/wp-content/uploads/d1-1.png
+   Output:
+   Diagonal Traversal of binary tree : 
+    8 10 14
+    3 6 7 13
+    1 4
  * Resources:
  *  
  * 
@@ -95,6 +104,24 @@ struct BinaryTree
         this->root = build_level_order_util(arr, this->root, 0);
     }
 
+    void diagonal_traversal_util(Node *root, int dist, map<int, vi> &dp)
+    {
+        if (root == NULL)
+            return;
+
+        dp[dist].pb(root->data);
+
+        diagonal_traversal_util(root->left, dist + 1, dp);
+        diagonal_traversal_util(root->right, dist, dp);
+    }
+
+    map<int, vi> diagonal_traversal()
+    {
+        map<int, vi> dp;
+        diagonal_traversal_util(this->root, 0, dp);
+        return dp;
+    }
+
 private:
     void print_in_order_util(Node *node)
     {
@@ -158,6 +185,16 @@ int main()
 
         cout << "Inorder traversal:\n";
         bt.print_in_order();
+
+        cout << "Diagonal traversal:\n";
+        auto dp = bt.diagonal_traversal();
+
+        for (auto it : dp)
+        {
+            for (auto i : it.se)
+                cout << i << " ";
+            cout << "\n";
+        }
     }
 
     return 0;

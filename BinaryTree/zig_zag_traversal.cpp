@@ -3,11 +3,35 @@ using namespace std;
 
 /*************************************************************************************************************
  *                                              
- * Link : 
+ * Link : https://practice.geeksforgeeks.org/problems/zigzag-tree-traversal/1
  * Description:
+    Given a Binary Tree. Find the Zig-Zag Level Order Traversal of the Binary Tree.
+
+    Examples:
+
+    Input:
+            3
+         /   \
+        2     1
+    Output: 3 1 2
+
+    Input:
+                7
+             /    \
+           9       7
+         /  \     /   
+        8    8   6     
+      /  \
+    10   9 
+    Output: 7 7 9 8 8 6 9 10 
     
+    Expected Time Complexity: O(N).
+    Expected Auxiliary Space: O(N).
+
+    Constraints:
+    1 <= N <= 104
  * Resources:
- *  
+ *  https://www.geeksforgeeks.org/zigzag-tree-traversal/
  * 
 *************************************************************************************************************/
 
@@ -95,6 +119,43 @@ struct BinaryTree
         this->root = build_level_order_util(arr, this->root, 0);
     }
 
+    vi zig_zag_traversal()
+    {
+        deque<Node *> dq;
+        dq.push_back(this->root);
+
+        vi v;
+        bool rtl = false; // to reverse it after adding root(only 1 element)
+
+        while (!dq.empty())
+        {
+            int size = dq.size();
+
+            if (rtl)
+                for (auto it = dq.rbegin(); it != dq.rend(); ++it)
+                    v.pb((*it)->data);
+            else
+                for (auto it = dq.begin(); it != dq.end(); ++it)
+                    v.pb((*it)->data);
+
+            while (size-- > 0)
+            {
+                Node *temp = dq.front();
+                dq.pop_front();
+
+                if (temp->left != NULL)
+                    dq.pb(temp->left);
+
+                if (temp->right != NULL)
+                    dq.pb(temp->right);
+            }
+
+            rtl = !rtl;
+        }
+
+        return v;
+    }
+
 private:
     void print_in_order_util(Node *node)
     {
@@ -156,8 +217,14 @@ int main()
         BinaryTree bt;
         bt.build_level_order(n);
 
-        cout << "Inorder traversal:\n";
+        cout << "In order traversal:\n";
         bt.print_in_order();
+
+        cout << "Zig zag traversal:\n";
+        vi v = bt.zig_zag_traversal();
+        for (int i : v)
+            cout << i << " ";
+        cout << "\n";
     }
 
     return 0;

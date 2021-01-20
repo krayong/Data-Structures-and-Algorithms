@@ -3,11 +3,49 @@ using namespace std;
 
 /*************************************************************************************************************
  *                                              
- * Link : 
+ * Link : https://practice.geeksforgeeks.org/problems/binary-tree-to-dll/1
  * Description:
-    
+    Given a Binary Tree (BT), convert it to a Doubly Linked List(DLL) In-Place. 
+    The left and right pointers in nodes are to be used as previous and next pointers 
+    respectively in converted DLL. The order of nodes in DLL must be same as 
+    Inorder of the given Binary Tree. The first node of Inorder traversal 
+    (leftmost node in BT) must be the head node of the DLL.
+
+    Examples:
+
+    Input:
+        1
+      /  \
+     3    2
+    Output:
+    3 1 2 
+    2 1 3 
+    Explanation: DLL would be 3<=>1<=>2
+
+    Input:
+            10
+          /   \
+        20    30
+      /   \
+     40   60
+    Output:
+    40 20 60 10 30 
+    30 10 60 20 40
+    Explanation:  DLL would be 
+    40<=>20<=>60<=>10<=>30.
+
+    Expected Time Complexity: O(N).
+    Expected Auxiliary Space: O(H).
+    Note: H is the height of the tree and this space is used implicitly for recursion stack.
+
+    Constraints:
+    1 <= Number of nodes <= 1000
+    1 <= Data of a node <= 1000
  * Resources:
- *  
+ *  https://www.geeksforgeeks.org/in-place-convert-a-given-binary-tree-to-doubly-linked-list/
+ *  https://www.geeksforgeeks.org/convert-a-given-binary-tree-to-doubly-linked-list-set-2/
+ *  https://www.geeksforgeeks.org/convert-given-binary-tree-doubly-linked-list-set-3/
+ *  https://www.geeksforgeeks.org/convert-a-given-binary-tree-to-doubly-linked-list-set-4/
  * 
 *************************************************************************************************************/
 
@@ -95,6 +133,30 @@ struct BinaryTree
         this->root = build_level_order_util(arr, this->root, 0);
     }
 
+    void bt_to_dll_util(Node *root, Node *&head)
+    {
+        if (root == NULL)
+            return;
+
+        bt_to_dll_util(root->right, head);
+
+        root->right = head;
+
+        if (head != NULL)
+            head->left = root;
+
+        head = root;
+
+        bt_to_dll_util(root->left, head);
+    }
+
+    Node *bt_to_dll()
+    {
+        Node *head = NULL;
+        bt_to_dll_util(this->root, head);
+        return head;
+    }
+
 private:
     void print_in_order_util(Node *node)
     {
@@ -158,6 +220,24 @@ int main()
 
         cout << "Inorder traversal:\n";
         bt.print_in_order();
+
+        Node *head = bt.bt_to_dll();
+
+        cout << "Double linked list:\n";
+        Node *prev = NULL;
+        while (head != NULL)
+        {
+            cout << head->data << " ";
+            prev = head;
+            head = head->right;
+        }
+        cout << "\n";
+        while(prev != NULL)
+        {
+            cout << prev->data << " ";
+            prev = prev->left;
+        }
+        cout << "\n";
     }
 
     return 0;

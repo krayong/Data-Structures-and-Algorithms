@@ -3,9 +3,31 @@ using namespace std;
 
 /*************************************************************************************************************
  *                                              
- * Link : 
+ * Link : https://www.geeksforgeeks.org/construct-binary-tree-string-bracket-representation/
  * Description:
-    
+    Construct a binary tree from a string consisting of parenthesis and integers. 
+    The whole input represents a binary tree. It contains an integer followed by zero, one or two pairs of parenthesis. The integer represents the root’s value and a pair of parenthesis contains a child binary tree with the same structure. Always start to construct the left child node of the parent first if it exists.
+
+    Examples: 
+
+    Input : "1(2)(3)" 
+    Output : 1 2 3
+    Explanation :
+           1
+          / \
+         2   3
+    Explanation: first pair of parenthesis contains 
+    left subtree and second one contains the right 
+    subtree. Preorder of above tree is "1 2 3".  
+
+    Input : "4(2(3)(1))(6(5))"
+    Output : 4 2 3 1 6 5
+    Explanation :
+           4
+         /   \
+        2     6
+       / \   / 
+      3   1 5   
  * Resources:
  *  
  * 
@@ -95,6 +117,54 @@ struct BinaryTree
         this->root = build_level_order_util(arr, this->root, 0);
     }
 
+    int find_index_first_end(string str, int s, int e)
+    {
+        if (s > e)
+            return -1;
+
+        int open_bkt_count = 0;
+        for (int i = s; i <= e; i++)
+        {
+            if (str[i] == '(')
+                open_bkt_count++;
+            else if (str[i] == ')')
+            {
+                if (open_bkt_count > 0)
+                {
+                    open_bkt_count--;
+                    if (open_bkt_count == 0)
+                        return i;
+                }
+            }
+        }
+
+        return -1;
+    }
+
+    Node* tree_from_string(string str, int s, int e)
+    {
+        if (s > e) return NULL;
+
+        Node *new_node = new Node(str[s] - '0');
+        int index = -1;
+
+        if (s + 1 <= e && str[s + 1] == '(')
+            index = find_index_first_end(str, s + 1, e);
+        
+        if (index != -1)
+        {
+            new_node->left = tree_from_string(str, s + 2, index - 1);
+            new_node->right = tree_from_string(str, index + 2, e - 1);
+        }
+
+        return new_node;
+    }
+
+    void build_tree(string str)
+    {
+        this->root = tree_from_string(str, 0, str.length() - 1);
+    }
+
 private:
     void print_in_order_util(Node *node)
     {
@@ -150,11 +220,11 @@ int main()
 
     while (t--)
     {
-        int n;
-        si(n);
+        string str;
+        ss(str);
 
         BinaryTree bt;
-        bt.build_level_order(n);
+        bt.build_tree(str);
 
         cout << "Inorder traversal:\n";
         bt.print_in_order();
