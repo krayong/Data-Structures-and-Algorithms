@@ -2,38 +2,45 @@
 using namespace std;
 
 /*************************************************************************************************************
- *                                              
- * Link : https://www.geeksforgeeks.org/print-k-sum-paths-binary-tree/
+ *                                         Binary Lifting   
+ * Link : https://practice.geeksforgeeks.org/problems/lowest-common-ancestor-in-a-binary-tree/1
  * Description:
-    A binary tree and a number k are given. Print every path 
-    in the tree with sum of the nodes in the path as k.
-    A path can start from any node and end at any node and 
-    must be downward only, i.e. they need not be root node and leaf node; 
-    and negative numbers can also be there in the tree.
+    Given a Binary Tree with all unique values and two nodes value n1 and n2. 
+    The task is to find the lowest common ancestor of the given two nodes. 
+    We may assume that either both n1 and n2 are present in the tree or none of them is present. 
 
     Examples:
 
-    Input : k = 5  
-    Root of below binary tree:
-           1
-        /     \
-      3        -1
-    /   \     /   \
-   2     1   4     5                        
-        /   / \     \                    
-       1   1   2     6    
-                       
-    Output :
-    3 2 
-    3 1 1 
-    1 3 1 
-    4 1 
-    1 -1 4 1 
-    -1 4 2 
-    5 
-    1 -1 5 
+    Input:
+    n1 = 2 , n2 =  3
+         1
+       /  \
+      2    3
+    Output: 1
+    Explanation: LCA of 2 and 3 is 1.
+
+    Input:
+    n1 = 3 , n2 = 4
+             5
+            /
+           2
+         /  \
+        3    4
+    Output: 2
+    Explanation: LCA of 3 and 4 is 2. 
+
+    Expected Time Complexity: O(N).
+    Expected Auxiliary Space: O(H).
+    Note: H is the height of the tree.
+
+    Constraints:
+    1 <= Number of nodes <= 100
+    1 <= Data of a node <= 1000
  * Resources:
- *  
+ *  https://www.geeksforgeeks.org/lowest-common-ancestor-binary-tree-set-1/
+ *  https://www.geeksforgeeks.org/lowest-common-ancestor-in-a-binary-tree-set-2-using-parent-pointer/
+ *  https://www.geeksforgeeks.org/lca-in-a-tree-using-binary-lifting-technique/
+ *  https://www.geeksforgeeks.org/find-lca-in-binary-tree-using-rmq/
  * 
 *************************************************************************************************************/
 
@@ -121,36 +128,53 @@ struct BinaryTree
         this->root = build_level_order_util(arr, this->root, 0);
     }
 
-    void print_k_paths(Node *root, vi &path, vvi &paths_vector, int k)
+    bool find(Node *root, int num)
     {
         if (root == NULL)
-            return;
+            return false;
 
-        path.pb(root->data);
-        
-        print_k_paths(root->left, path, paths_vector, k);
-        print_k_paths(root->right, path, paths_vector, k);
+        if (root->data == num || find(root->left, num) || find(root->right, num))
+            return true;
 
-        int sum = 0;
-        for(int i = path.size() - 1; i >= 0; i--)
-        {
-            sum += path[i];
-
-            if (sum == k)
-                paths_vector.pb(vi(path.begin() + i, path.end()));
-        }
-
-        path.pop_back();
+        return false;
     }
 
-    vvi print_k_paths(int k)
+    Node *find_lca(Node *root, int num1, bool &num1_found, int num2, bool &num2_found)
     {
-        vvi paths_vector;
-        vi path;
+        if (root == NULL)
+            return NULL;
 
-        print_k_paths(this->root, path, paths_vector, k);
+        if (root->data == num1)
+        {
+            num1_found = true;
+            return root;
+        }
 
-        return paths_vector;
+        if (root->data == num2)
+        {
+            num2_found = true;
+            return root;
+        }
+
+        auto lt = find_lca(root->left, num1, num1_found, num2, num2_found);
+        auto rt = find_lca(root->right, num1, num1_found, num2, num2_found);
+
+        if (lt && rt)
+            return root;
+
+        return (lt == NULL) ? rt : lt;
+    }
+
+    Node *find_lca(int num1, int num2)
+    {
+        bool num1_found = false, num2_found = false;
+
+        Node *lca = find_lca(this->root, num1, num1_found, num2, num2_found);
+
+        if (num1_found && num2_found || num1_found && find(this->root, num2) || num2_found && find(this->root, num1))
+            return lca;
+
+        return NULL;
     }
 
 private:
@@ -214,22 +238,14 @@ int main()
         BinaryTree bt;
         bt.build_level_order(n);
 
-        int k;
-        si(k);
+        int num1, num2;
+        si(num1);
+        si(num2);
 
         cout << "Inorder traversal:\n";
         bt.print_in_order();
 
-        auto paths = bt.print_k_paths(k);
-        cout << "Paths are:\n";
-        fo(i, 0, paths.size())
-        {
-            fo(j, 0, paths[i].size())
-            {
-                cout << paths[i][j] << " ";
-            }
-            cout << "\n";
-        }
+        cout << "Lowest Common Ancestor of " << num1 << " and " << num2 << " is: " << bt.find_lca(num1, num2)->data;
     }
 
     return 0;

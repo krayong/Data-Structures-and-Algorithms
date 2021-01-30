@@ -3,37 +3,19 @@ using namespace std;
 
 /*************************************************************************************************************
  *                                              
- * Link : https://www.geeksforgeeks.org/print-k-sum-paths-binary-tree/
+ * Link : https://www.geeksforgeeks.org/kth-ancestor-node-binary-tree/
  * Description:
-    A binary tree and a number k are given. Print every path 
-    in the tree with sum of the nodes in the path as k.
-    A path can start from any node and end at any node and 
-    must be downward only, i.e. they need not be root node and leaf node; 
-    and negative numbers can also be there in the tree.
+    Given a binary tree in which nodes are numbered from 1 to n. 
+    Given a node and a positive integer K. We have to print the K-th ancestor 
+    of the given node in the binary tree. If there does not exist any such ancestor then print -1.
+    
+    Example:
+    https://media.geeksforgeeks.org/wp-content/uploads/tree122-1.gif
 
-    Examples:
+    2nd ancestor of node 4 and 5 is 1. 3rd ancestor of node 4 will be -1. 
 
-    Input : k = 5  
-    Root of below binary tree:
-           1
-        /     \
-      3        -1
-    /   \     /   \
-   2     1   4     5                        
-        /   / \     \                    
-       1   1   2     6    
-                       
-    Output :
-    3 2 
-    3 1 1 
-    1 3 1 
-    4 1 
-    1 -1 4 1 
-    -1 4 2 
-    5 
-    1 -1 5 
  * Resources:
- *  
+ *  https://www.geeksforgeeks.org/kth-ancestor-node-binary-tree-set-2/
  * 
 *************************************************************************************************************/
 
@@ -121,36 +103,49 @@ struct BinaryTree
         this->root = build_level_order_util(arr, this->root, 0);
     }
 
-    void print_k_paths(Node *root, vi &path, vvi &paths_vector, int k)
+    void bfs(int parent[])
     {
-        if (root == NULL)
-            return;
+        parent[this->root->data] = -1;
 
-        path.pb(root->data);
-        
-        print_k_paths(root->left, path, paths_vector, k);
-        print_k_paths(root->right, path, paths_vector, k);
+        queue<Node *> q;
+        q.push(this->root);
 
-        int sum = 0;
-        for(int i = path.size() - 1; i >= 0; i--)
+        while (!q.empty())
         {
-            sum += path[i];
+            Node *temp = q.front();
+            q.pop();
 
-            if (sum == k)
-                paths_vector.pb(vi(path.begin() + i, path.end()));
+            if (temp->left != NULL)
+            {
+                parent[temp->left->data] = temp->data;
+                q.push(temp->left);
+            }
+
+            if (temp->right != NULL)
+            {
+                parent[temp->right->data] = temp->data;
+                q.push(temp->right);
+            }
         }
-
-        path.pop_back();
     }
 
-    vvi print_k_paths(int k)
+    int find_kth_ancestor(int size, int node_num, int k)
     {
-        vvi paths_vector;
-        vi path;
+        int parent[size + 1] = {0};
 
-        print_k_paths(this->root, path, paths_vector, k);
+        bfs(parent);
 
-        return paths_vector;
+        int count = 0;
+        while (node_num != -1)
+        {
+            node_num = parent[node_num];
+            ++count;
+
+            if (count == k)
+                break;
+        }
+
+        return node_num;
     }
 
 private:
@@ -214,22 +209,14 @@ int main()
         BinaryTree bt;
         bt.build_level_order(n);
 
-        int k;
+        int node_num, k;
+        si(node_num);
         si(k);
 
         cout << "Inorder traversal:\n";
         bt.print_in_order();
 
-        auto paths = bt.print_k_paths(k);
-        cout << "Paths are:\n";
-        fo(i, 0, paths.size())
-        {
-            fo(j, 0, paths[i].size())
-            {
-                cout << paths[i][j] << " ";
-            }
-            cout << "\n";
-        }
+        cout << "K'th ancestor of " << node_num << "th node with k as " << k << " is: " << bt.find_kth_ancestor(n, node_num, k);
     }
 
     return 0;

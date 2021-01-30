@@ -3,37 +3,40 @@ using namespace std;
 
 /*************************************************************************************************************
  *                                              
- * Link : https://www.geeksforgeeks.org/print-k-sum-paths-binary-tree/
+ * Link : https://practice.geeksforgeeks.org/problems/check-if-tree-is-isomorphic/1
  * Description:
-    A binary tree and a number k are given. Print every path 
-    in the tree with sum of the nodes in the path as k.
-    A path can start from any node and end at any node and 
-    must be downward only, i.e. they need not be root node and leaf node; 
-    and negative numbers can also be there in the tree.
+    Given two Binary Trees. Check whether they are Isomorphic or not.
 
     Examples:
 
-    Input : k = 5  
-    Root of below binary tree:
-           1
-        /     \
-      3        -1
-    /   \     /   \
-   2     1   4     5                        
-        /   / \     \                    
-       1   1   2     6    
-                       
-    Output :
-    3 2 
-    3 1 1 
-    1 3 1 
-    4 1 
-    1 -1 4 1 
-    -1 4 2 
-    5 
-    1 -1 5 
+    Input:
+    T1:    1     T2:     1
+          / \           / \
+        2    3        3    2
+       /             /
+      4             4
+    Output: No
+
+    Input:
+    T1:  1     T2:    1
+        / \          / \
+       2   3        3   2
+      /                  \
+     4                    4
+    Output: Yes
+
+    Note: 
+    Two trees are called isomorphic if one of them can be obtained from other by a series of flips, i.e. by swapping left and right children of a number of nodes. Any number of nodes at any level can have their children swapped. Two empty trees are isomorphic.
+    For example, following two trees are isomorphic with following sub-trees flipped: 2 and 3, NULL and 6, 7 and 8.
+    ISomorphicTrees
+
+    Expected Time Complexity: O(min(M,N)) where M and N are the sizes of the two trees.
+    Expected Auxiliary Space: O(min(H1,H2)) where H1 and H2 are the heights of the two trees.
+
+    Constraints:
+    1<=Number of nodes<=105
  * Resources:
- *  
+ *  https://www.geeksforgeeks.org/tree-isomorphism-problem/
  * 
 *************************************************************************************************************/
 
@@ -121,38 +124,6 @@ struct BinaryTree
         this->root = build_level_order_util(arr, this->root, 0);
     }
 
-    void print_k_paths(Node *root, vi &path, vvi &paths_vector, int k)
-    {
-        if (root == NULL)
-            return;
-
-        path.pb(root->data);
-        
-        print_k_paths(root->left, path, paths_vector, k);
-        print_k_paths(root->right, path, paths_vector, k);
-
-        int sum = 0;
-        for(int i = path.size() - 1; i >= 0; i--)
-        {
-            sum += path[i];
-
-            if (sum == k)
-                paths_vector.pb(vi(path.begin() + i, path.end()));
-        }
-
-        path.pop_back();
-    }
-
-    vvi print_k_paths(int k)
-    {
-        vvi paths_vector;
-        vi path;
-
-        print_k_paths(this->root, path, paths_vector, k);
-
-        return paths_vector;
-    }
-
 private:
     void print_in_order_util(Node *node)
     {
@@ -198,6 +169,23 @@ private:
     }
 };
 
+bool is_isomorphic(Node *n1, Node *n2)
+{
+    if (n1 == NULL && n2 == NULL) return true;
+
+    if (n1 == NULL || n2 == NULL) return false;
+
+    if (n1->data != n2->data) return false;
+
+    return (is_isomorphic(n1->left, n2->left) && is_isomorphic(n1->right, n2->right)) ||
+            (is_isomorphic(n1->left, n2->right) && is_isomorphic(n1->right, n2->left));
+}
+
+bool check_isomorphic(BinaryTree &bt1, BinaryTree &bt2)
+{
+    return is_isomorphic(bt1.root, bt2.root);
+}
+
 int main()
 {
     ios_base::sync_with_stdio(0), cin.tie(0), cout.tie(0);
@@ -208,28 +196,28 @@ int main()
 
     while (t--)
     {
-        int n;
-        si(n);
+        int n1;
+        si(n1);
 
-        BinaryTree bt;
-        bt.build_level_order(n);
+        BinaryTree bt1;
+        bt1.build_level_order(n1);
 
-        int k;
-        si(k);
+        cout << "Inorder traversal of first tree:\n";
+        bt1.print_in_order();
 
-        cout << "Inorder traversal:\n";
-        bt.print_in_order();
+        int n2;
+        si(n2);
 
-        auto paths = bt.print_k_paths(k);
-        cout << "Paths are:\n";
-        fo(i, 0, paths.size())
-        {
-            fo(j, 0, paths[i].size())
-            {
-                cout << paths[i][j] << " ";
-            }
-            cout << "\n";
-        }
+        BinaryTree bt2;
+        bt2.build_level_order(n2);
+
+        cout << "Inorder traversal of second tree:\n";
+        bt2.print_in_order();
+
+        if (check_isomorphic(bt1, bt2))
+            cout << "The trees are isomorphic\n";
+        else
+            cout << "The trees are not isomorphic\n";
     }
 
     return 0;

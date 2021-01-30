@@ -3,37 +3,33 @@ using namespace std;
 
 /*************************************************************************************************************
  *                                              
- * Link : https://www.geeksforgeeks.org/print-k-sum-paths-binary-tree/
+ * Link : https://practice.geeksforgeeks.org/problems/min-distance-between-two-given-nodes-of-a-binary-tree/1
  * Description:
-    A binary tree and a number k are given. Print every path 
-    in the tree with sum of the nodes in the path as k.
-    A path can start from any node and end at any node and 
-    must be downward only, i.e. they need not be root node and leaf node; 
-    and negative numbers can also be there in the tree.
+    Given a binary tree and two node values your task is to find the minimum distance between them.
 
     Examples:
 
-    Input : k = 5  
-    Root of below binary tree:
-           1
-        /     \
-      3        -1
-    /   \     /   \
-   2     1   4     5                        
-        /   / \     \                    
-       1   1   2     6    
-                       
-    Output :
-    3 2 
-    3 1 1 
-    1 3 1 
-    4 1 
-    1 -1 4 1 
-    -1 4 2 
-    5 
-    1 -1 5 
+    Input:
+        1
+      /  \
+     2    3
+    a = 2, b = 3
+    Output: 2
+    Explanation: The tree formed is:
+       1
+     /   \ 
+    2     3
+    We need the distance between 2 and 3. Being at node 2, we need to take two steps ahead in order to reach node 3.
+    The path followed will be: 2 -> 1 -> 3. Hence, the result is 2. 
+    
+    Expected Time Complexity: O(N).
+    Expected Auxiliary Space: O(Height of the Tree).
+
+    Constraints:
+    1 <= Number of nodes <= 104
+    1 <= Data of a node <= 105
  * Resources:
- *  
+ *  https://www.geeksforgeeks.org/find-distance-between-two-nodes-of-a-binary-tree/
  * 
 *************************************************************************************************************/
 
@@ -121,36 +117,89 @@ struct BinaryTree
         this->root = build_level_order_util(arr, this->root, 0);
     }
 
-    void print_k_paths(Node *root, vi &path, vvi &paths_vector, int k)
+    bool check_if_exists(Node *root, int num)
     {
         if (root == NULL)
-            return;
+            return false;
 
-        path.pb(root->data);
-        
-        print_k_paths(root->left, path, paths_vector, k);
-        print_k_paths(root->right, path, paths_vector, k);
+        if (root->data == num || check_if_exists(root->left, num) || check_if_exists(root->right, num))
+            return true;
 
-        int sum = 0;
-        for(int i = path.size() - 1; i >= 0; i--)
-        {
-            sum += path[i];
-
-            if (sum == k)
-                paths_vector.pb(vi(path.begin() + i, path.end()));
-        }
-
-        path.pop_back();
+        return false;
     }
 
-    vvi print_k_paths(int k)
+    Node *find_lca(Node *root, int num1, bool &num1_found, int num2, bool &num2_found)
     {
-        vvi paths_vector;
-        vi path;
+        if (root == NULL)
+            return NULL;
 
-        print_k_paths(this->root, path, paths_vector, k);
+        if (root->data == num1)
+        {
+            num1_found = true;
+            return root;
+        }
 
-        return paths_vector;
+        if (root->data == num2)
+        {
+            num2_found = true;
+            return root;
+        }
+
+        auto lt = find_lca(root->left, num1, num1_found, num2, num2_found);
+        auto rt = find_lca(root->right, num1, num1_found, num2, num2_found);
+
+        if (lt && rt)
+            return root;
+
+        return (lt == NULL) ? rt : lt;
+    }
+
+    Node *find_lca(int num1, int num2)
+    {
+        bool num1_found = false, num2_found = false;
+
+        Node *lca = find_lca(this->root, num1, num1_found, num2, num2_found);
+
+        if (num1_found && num2_found || num1_found && check_if_exists(this->root, num2) || num2_found && check_if_exists(this->root, num1))
+            return lca;
+
+        return NULL;
+    }
+
+    int find_level(Node *root, int num)
+    {
+        if (root == NULL)
+            return -1;
+
+        if (root->data == num)
+            return 0;
+
+        int left_lvl = find_level(root->left, num) + 1;
+        int right_lvl = find_level(root->right, num) + 1;
+
+        if (left_lvl > 0)
+            return left_lvl;
+        else if (right_lvl > 0)
+            return right_lvl;
+        else
+            return -1;
+    }
+
+    int find_dist(int num1, int num2)
+    {
+        Node *lca = find_lca(num1, num2);
+
+        if (lca == NULL)
+            return -1;
+
+        int num1_dist = find_level(this->root, num1);
+        int num2_dist = find_level(this->root, num2);
+
+        int lca_dist = find_level(this->root, lca->data);
+        
+        if (num1_dist == -1 || num2_dist == -1)
+            return -1;
+        return (num1_dist + num2_dist - (2 * lca_dist));
     }
 
 private:
@@ -214,22 +263,14 @@ int main()
         BinaryTree bt;
         bt.build_level_order(n);
 
-        int k;
-        si(k);
+        int num1, num2;
+        si(num1);
+        si(num2);
 
         cout << "Inorder traversal:\n";
         bt.print_in_order();
 
-        auto paths = bt.print_k_paths(k);
-        cout << "Paths are:\n";
-        fo(i, 0, paths.size())
-        {
-            fo(j, 0, paths[i].size())
-            {
-                cout << paths[i][j] << " ";
-            }
-            cout << "\n";
-        }
+        cout << "Distance between " << num1 << " and " << num2 << " is: " << bt.find_dist(num1, num2);
     }
 
     return 0;

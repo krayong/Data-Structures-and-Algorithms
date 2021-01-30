@@ -3,37 +3,53 @@ using namespace std;
 
 /*************************************************************************************************************
  *                                              
- * Link : https://www.geeksforgeeks.org/print-k-sum-paths-binary-tree/
+ * Link : https://practice.geeksforgeeks.org/problems/duplicate-subtrees/1
  * Description:
-    A binary tree and a number k are given. Print every path 
-    in the tree with sum of the nodes in the path as k.
-    A path can start from any node and end at any node and 
-    must be downward only, i.e. they need not be root node and leaf node; 
-    and negative numbers can also be there in the tree.
+    Given a binary tree of size N, your task is to complete the function printAllDups(), 
+    that finds and prints all duplicate subtrees from the given binary tree.
+    For each duplicate subtrees, you only need to print the root node value of any one of them.
+    Two trees are duplicate if they have the same structure with same node values.
 
-    Examples:
+    Example:
 
-    Input : k = 5  
-    Root of below binary tree:
-           1
-        /     \
-      3        -1
-    /   \     /   \
-   2     1   4     5                        
-        /   / \     \                    
-       1   1   2     6    
-                       
-    Output :
-    3 2 
-    3 1 1 
-    1 3 1 
-    4 1 
-    1 -1 4 1 
-    -1 4 2 
-    5 
-    1 -1 5 
+    Input : 
+               1
+             /   \ 
+           2       3
+         /   \       \    
+        4     5       2     
+                     /  \    
+                    4    5
+
+    Output : 2
+    Explanation : 
+            2     
+          /   \    
+         4     5   is the duplicate sub-tree.
+ 
+    Input : 
+               1
+             /   \ 
+           2       3
+
+    Output: -1
+    Explanation: There is no duplicate sub-tree in the given binary tree.
+    
+    Note: Two same leaf nodes are not considered as subtree as size of a leaf node is one.
+
+    Input:
+    The function takes a single argument as input, the reference pointer to the root node of the binary tree.
+    There will be T, test cases and for each test case the function will be called separately.
+
+    Output:
+    The function should print space separated root node value of all the duplicate subtrees. 
+    If no duplicate subtree is present in the binary tree print "-1 ".
+
+    Constraints:
+    1<=T<=100
+    1<=N<=100
  * Resources:
- *  
+ *  https://www.geeksforgeeks.org/find-duplicate-subtrees/
  * 
 *************************************************************************************************************/
 
@@ -121,36 +137,55 @@ struct BinaryTree
         this->root = build_level_order_util(arr, this->root, 0);
     }
 
-    void print_k_paths(Node *root, vi &path, vvi &paths_vector, int k)
+    string inorder(Node *root, unordered_map<string, pair<int, int>> &um)
     {
         if (root == NULL)
-            return;
+            return "";
 
-        path.pb(root->data);
-        
-        print_k_paths(root->left, path, paths_vector, k);
-        print_k_paths(root->right, path, paths_vector, k);
+        string s;
 
-        int sum = 0;
-        for(int i = path.size() - 1; i >= 0; i--)
-        {
-            sum += path[i];
+        auto temp_left = inorder(root->left, um);
+        if (temp_left != "")
+            s += temp_left;
 
-            if (sum == k)
-                paths_vector.pb(vi(path.begin() + i, path.end()));
-        }
+        s += root->data;
 
-        path.pop_back();
+        auto temp_right = inorder(root->right, um);
+        if (temp_right != "")
+            s += temp_right;
+
+        auto find_res = um.find(s);
+        if (find_res != um.end())
+            um[s].se++;
+        else
+            um.insert(mp(s, mp(root->data, 1)));
+
+        return s;
     }
 
-    vvi print_k_paths(int k)
+    vi check_dup_subtree()
     {
-        vvi paths_vector;
-        vi path;
+        unordered_map<string, pair<int, int>> um;
+        inorder(this->root, um);
 
-        print_k_paths(this->root, path, paths_vector, k);
+        bool found = false;
+        vi result;
+        for (auto it : um)
+        {
+            auto res = it.se;
+            if (res.se > 1)
+            {
+                result.pb(res.fi);
+                found = true;
+            }
+        }
 
-        return paths_vector;
+        if (found == false)
+            result.pb(-1);
+        else
+            sortall(result);
+
+        return result;
     }
 
 private:
@@ -214,22 +249,14 @@ int main()
         BinaryTree bt;
         bt.build_level_order(n);
 
-        int k;
-        si(k);
-
         cout << "Inorder traversal:\n";
         bt.print_in_order();
 
-        auto paths = bt.print_k_paths(k);
-        cout << "Paths are:\n";
-        fo(i, 0, paths.size())
-        {
-            fo(j, 0, paths[i].size())
-            {
-                cout << paths[i][j] << " ";
-            }
-            cout << "\n";
-        }
+        auto res = bt.check_dup_subtree();
+
+        cout << "Duplicate subtrees are:\n";
+        for (int i : res)
+            cout << i << " ";
     }
 
     return 0;
