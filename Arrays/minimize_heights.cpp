@@ -23,7 +23,8 @@ using namespace std;
     Expected Auxiliary Space: O(1)
 
  * Resources:
-    https://www.geeksforgeeks.org/minimize-the-maximum-difference-between-the-heights/
+ *  https://www.geeksforgeeks.org/minimize-the-maximum-difference-between-the-heights/
+ *  https://stackoverflow.com/questions/32233916/minimum-difference-between-heights-of-towers/
  * 
 *************************************************************************************************************/
 
@@ -74,18 +75,18 @@ int main()
         int arr[n];
         fo(i, n) si(arr[i]);
 
-        int minimum{arr[0]}, maximum{arr[0]};
-        fo(i, n) 
+        sort(arr, arr + n);
+        int min_diff = arr[n - 1] - arr[0];
+        int lo = arr[0] + k, hi = arr[n - 1] - k;
+        fo(i, n - 1)
         {
-            if (i == 0) continue;
-            if (arr[i] > maximum) maximum = arr[i];
-            else if (arr[i] < minimum) minimum = arr[i];
+            int min_height = min(lo, arr[i + 1] - k);
+            int max_height = max(hi, arr[i] + k);
+            if (min_height < 0) continue;
+            min_diff = min(min_diff, max_height - min_height);
         }
 
-        int min_height = min(abs(maximum - minimum), abs(maximum - minimum - k));
-        min_height = min(min_height, abs(maximum - minimum - k - k));
-        
-        ps(min_height);
+        ps(min_diff);
     }
 
     return 0;

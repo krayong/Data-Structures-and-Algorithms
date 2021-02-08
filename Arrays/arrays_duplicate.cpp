@@ -77,8 +77,8 @@ int main()
     {
         int n{0};
         si(n);
-        int arr[n];
-        fo(i, n) si(arr[i]);
+        int arr[n + 1];
+        fo(i, n + 1) si(arr[i]);
 
         int tortoise{arr[0]}, hare{arr[0]};
 
