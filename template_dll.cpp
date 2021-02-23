@@ -23,6 +23,9 @@ using namespace std;
 #define present(c, x) (c.find(x) != c.end())
 #define cpresent(c, x) (find(all(c), x) != c.end())
 
+#define fastio ios_base::sync_with_stdio(0), cin.tie(0), cout.tie(0)
+#define randomize srand(chrono::high_resolution_clock::now().time_since_epoch().count())
+
 typedef pair<int, int> pii;
 typedef pair<ll, ll> pll;
 typedef vector<int> vi;
@@ -100,8 +103,8 @@ struct DoublyLinkedList
 
 int main()
 {
-    ios_base::sync_with_stdio(0), cin.tie(0), cout.tie(0);
-    srand(chrono::high_resolution_clock::now().time_since_epoch().count());
+    fastio;
+    randomize;
 
     int t;
     si(t);
