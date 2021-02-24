@@ -4,7 +4,7 @@ using namespace std;
 
 /*************************************************************************************************************
  *                                              
- * Link : https://practice.geeksforgeeks.org/problems/fractional-knapsack-1587115620/
+ * Link : https://practice.geeksforgeeks.org/problems/fractional-knapsack-1587115620/1
  * Description:
     Given weights and values of N items, we need to put these items in a knapsack of capacity W 
     to get the maximum total value in the knapsack.

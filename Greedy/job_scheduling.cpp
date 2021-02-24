@@ -4,7 +4,7 @@ using namespace std;
 
 /*************************************************************************************************************
  *                                              
- * Link : https://practice.geeksforgeeks.org/problems/job-sequencing-problem-1587115620/
+ * Link : https://practice.geeksforgeeks.org/problems/job-sequencing-problem-1587115620/1
  * Description:
     Given a set of N jobs where each job i has a deadline and profit associated to it. 
     Each job takes 1 unit of time to complete and only one job can be scheduled at a time. 

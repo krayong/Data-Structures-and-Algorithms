@@ -4,7 +4,7 @@ using namespace std;
 
 /*************************************************************************************************************
  *                                              
- * Link : https://practice.geeksforgeeks.org/problems/n-meetings-in-one-room-1587115620/
+ * Link : https://practice.geeksforgeeks.org/problems/n-meetings-in-one-room-1587115620/1
  * Description:
     There is one meeting room in a firm. There are N meetings in the form of (S[i], F[i]) 
     where S[i] is start time of meeting i and F[i] is finish time of meeting i.

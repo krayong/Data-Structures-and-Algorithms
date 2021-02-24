@@ -4,7 +4,7 @@ using namespace std;
 
 /*************************************************************************************************************
  *                                              
- * Link : https://practice.geeksforgeeks.org/problems/huffman-encoding/
+ * Link : https://practice.geeksforgeeks.org/problems/huffman-encoding/1
  * Description:
     Given An array of Alphabets and their frequency. 
     Your task is to print all the given alphabets Huffman Encoding.

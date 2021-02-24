@@ -4,7 +4,7 @@ using namespace std;
 
 /*************************************************************************************************************
  *                                              
- * Link : https://practice.geeksforgeeks.org/problems/water-connection-problem/
+ * Link : https://practice.geeksforgeeks.org/problems/water-connection-problem/1
  * Description:
     Every house in the colony has at most one pipe going into it and at most one pipe going out of it. 
     Tanks and taps are to be installed in a manner such that every house with one outgoing pipe 
